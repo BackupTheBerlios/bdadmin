@@ -10,6 +10,9 @@
 <BODY BGCOLOR="#FFFFFF" BACKGROUND="imagenes/fondo_ces.gif">
 <center>
 <%
+	// Página de vuelta. En la página aparecen dos vínculos [Volver]. En esta cadena se almacena el destino.
+	String volver = "default.jsp";
+
 	String p_modo  = request.getParameter("MODO");
 	String p_tabla = request.getParameter("TABLA");
 	String p_fila  = request.getParameter("FILA");
@@ -22,6 +25,16 @@
 	ResultSet registros = null;
 	Statement instruccion=null;
 	try {
+		// En primer lugar aseguramos que el usuario está identificado:
+		Integer idUsuario  = (Integer)session.getAttribute("idUsuario");
+		String clave       = (String) session.getAttribute("clave");
+		String tipoUsuario = (String) session.getAttribute("tipoUsuario");
+		if (idUsuario == null || clave == null || tipoUsuario == null || !tipoUsuario.equals("ADMIN"))
+		{
+			volver="../index.htm";
+			throw new Exception("Zona restringida: debe identificarse.");
+		}
+
 		Class.forName(driver);
 		canal = DriverManager.getConnection(url,usuarioBD,claveBD);
 		instruccion = canal.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE);
